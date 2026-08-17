@@ -95,6 +95,9 @@ export const ICNS: IImage = {
       const imageHeader = readImageHeader(input, imageOffset)
       const imageSize = getImageSize(imageHeader[0])
       images.push(imageSize)
+      if (imageHeader[1] <= 0) {
+        break
+      }
       imageOffset += imageHeader[1]
     }
 
