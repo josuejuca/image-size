@@ -64,9 +64,10 @@ export function readUInt(
 }
 
 function readBox(input: Uint8Array, offset: number) {
-  if (input.length - offset < 4) return
+  if (input.length - offset < 8) return
   const boxSize = readUInt32BE(input, offset)
-  if (input.length - offset < boxSize) return
+  if (boxSize < 8 && boxSize !== 0) return
+  if (boxSize > 0 && input.length - offset < boxSize) return
   return {
     name: toUTF8String(input, 4 + offset, 8 + offset),
     offset,
@@ -79,12 +80,11 @@ export function findBox(
   boxName: string,
   currentOffset: number,
 ) {
-  while (currentOffset < input.length) {
+  while (currentOffset + 8 <= input.length) {
     const box = readBox(input, currentOffset)
     if (!box) break
     if (box.name === boxName) return box
-    // Fix the infinite loop by ensuring offset always increases
-    // If box.size is 0, advance by at least 8 bytes (the size of the box header)
-    currentOffset += box.size > 0 ? box.size : 8
+    const increment = box.size > 0 ? box.size : 8
+    currentOffset += increment
   }
 }

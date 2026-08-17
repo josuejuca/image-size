@@ -41,7 +41,7 @@ export const HEIF: IImage = {
     // Find all ispe and clap boxes
     while (currentOffset < ipcoBox.offset + ipcoBox.size) {
       const ispeBox = findBox(input, 'ispe', currentOffset)
-      if (!ispeBox) break
+      if (!ispeBox || ispeBox.size <= 0) break
 
       const rawWidth = readUInt32BE(input, ispeBox.offset + 12)
       const rawHeight = readUInt32BE(input, ispeBox.offset + 16)
@@ -57,7 +57,9 @@ export const HEIF: IImage = {
 
       images.push({ height, width })
 
-      currentOffset = ispeBox.offset + ispeBox.size
+      const nextOffset = ispeBox.offset + ispeBox.size
+      if (nextOffset <= currentOffset) break
+      currentOffset = nextOffset
     }
 
     if (images.length === 0) {
