@@ -1,19 +1,17 @@
-# Tired maintainer doesn't want your slop
-Archiving this repo, because I don't want to deal with the same LLM generated "security advisory" about an inifinite loop over and over again.  
-I do not wish to participate in this sloppy mess of a platform. 
-Please do not create issues or advisories for me, and please do not summon me 🙏.
+# @josuejuca/image-size
 
-At some point I'll revive this project to address actual issues, but on [Codeberg](https://codeberg.org/image-size/image-size).
-
-This repo on github will not be updated. 
+> **Notice & Credits**: This package (`@josuejuca/image-size`) is a security-patched release based on the original [`image-size`](https://github.com/image-size/image-size) project created by Aditya Mukerjee ([netroy](http://netroy.in/)) and its contributors.
+> 
+> All credits for the original design and core codebase belong to **Aditya Mukerjee (netroy)** and the open-source contributors of `image-size`.
+> 
+> This version (`2.0.3`) includes defensive loop guards resolving Denial of Service (DoS) security advisories **GHSA-w3rx-r6r6-pgpr** and **GHSA-5p2g-fcmc-qvqq**.
 
 ---
 
 # image-size
 
-[![Build Status](https://circleci.com/gh/image-size/image-size.svg?style=shield)](https://circleci.com/gh/image-size/image-size)
-[![Package Version](https://img.shields.io/npm/v/image-size.svg)](https://www.npmjs.com/package/image-size)
-[![Downloads](https://img.shields.io/npm/dm/image-size.svg)](http://npm-stat.com/charts.html?package=image-size&author=netroy&from=&to=)
+[![Package Version](https://img.shields.io/npm/v/@josuejuca/image-size.svg)](https://www.npmjs.com/package/@josuejuca/image-size)
+[![Downloads](https://img.shields.io/npm/dm/@josuejuca/image-size.svg)](https://npm-stat.com/charts.html?package=%40josuejuca%2Fimage-size)
 
 Fast, lightweight NodeJS package to get dimensions of any image file or buffer.
 
@@ -50,11 +48,11 @@ Fast, lightweight NodeJS package to get dimensions of any image file or buffer.
 ## Installation
 
 ```shell
-npm install image-size
+npm install @josuejuca/image-size
 # or
-yarn add image-size
+yarn add @josuejuca/image-size
 # or
-pnpm add image-size
+pnpm add @josuejuca/image-size
 ```
 
 ## Usage
