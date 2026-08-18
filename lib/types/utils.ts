@@ -3,7 +3,12 @@ export const toUTF8String = (
   input: Uint8Array,
   start = 0,
   end = input.length,
-) => decoder.decode(input.slice(start, end))
+) => {
+  if (typeof Buffer !== 'undefined' && Buffer.isBuffer(input)) {
+    return input.toString('utf8', start, end)
+  }
+  return decoder.decode(new Uint8Array(input.buffer, input.byteOffset + start, end - start))
+}
 
 export const toHexString = (input: Uint8Array, start = 0, end = input.length) =>
   input
