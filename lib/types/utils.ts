@@ -7,46 +7,51 @@ export const toUTF8String = (
   if (typeof Buffer !== 'undefined' && Buffer.isBuffer(input)) {
     return input.toString('utf8', start, end)
   }
-  return decoder.decode(new Uint8Array(input.buffer, input.byteOffset + start, end - start))
+  const slice = input.subarray ? input.subarray(start, end) : input.slice(start, end)
+  return decoder.decode(new Uint8Array(slice.buffer, slice.byteOffset, slice.byteLength))
 }
 
-export const toHexString = (input: Uint8Array, start = 0, end = input.length) =>
-  input
-    .slice(start, end)
-    .reduce((memo, i) => memo + `0${i.toString(16)}`.slice(-2), '')
+export const toHexString = (input: Uint8Array, start = 0, end = input.length) => {
+  const slice = input.subarray ? input.subarray(start, end) : input.slice(start, end)
+  let memo = ''
+  for (let i = 0; i < slice.length; i++) {
+    memo += `0${slice[i].toString(16)}`.slice(-2)
+  }
+  return memo
+}
 
-const getView = (input: Uint8Array, offset: number) =>
-  new DataView(input.buffer, input.byteOffset + offset)
-
-export const readInt16LE = (input: Uint8Array, offset = 0) =>
-  getView(input, offset).getInt16(0, true)
+export const readInt16LE = (input: Uint8Array, offset = 0) => {
+  const val = input[offset] | (input[offset + 1] << 8)
+  return (val << 16) >> 16
+}
 
 export const readUInt16BE = (input: Uint8Array, offset = 0) =>
-  getView(input, offset).getUint16(0, false)
+  ((input[offset] << 8) | input[offset + 1]) >>> 0
 
 export const readUInt16LE = (input: Uint8Array, offset = 0) =>
-  getView(input, offset).getUint16(0, true)
+  (input[offset] | (input[offset + 1] << 8)) >>> 0
 
-// DataView doesn't have 24-bit methods
-export const readUInt24LE = (input: Uint8Array, offset = 0) => {
-  const view = getView(input, offset)
-  return view.getUint16(0, true) + (view.getUint8(2) << 16)
-}
+export const readUInt24LE = (input: Uint8Array, offset = 0) =>
+  (input[offset] | (input[offset + 1] << 8) | (input[offset + 2] << 16)) >>> 0
 
 export const readInt32LE = (input: Uint8Array, offset = 0) =>
-  getView(input, offset).getInt32(0, true)
+  (input[offset] | (input[offset + 1] << 8) | (input[offset + 2] << 16) | (input[offset + 3] << 24))
 
 export const readUInt32BE = (input: Uint8Array, offset = 0) =>
-  getView(input, offset).getUint32(0, false)
+  ((input[offset] * 0x1000000) + ((input[offset + 1] << 16) | (input[offset + 2] << 8) | input[offset + 3])) >>> 0
 
 export const readUInt32LE = (input: Uint8Array, offset = 0) =>
-  getView(input, offset).getUint32(0, true)
+  ((input[offset]) | (input[offset + 1] << 8) | (input[offset + 2] << 16) | (input[offset + 3] * 0x1000000)) >>> 0
 
 export const readUInt64 = (
   input: Uint8Array,
   offset: number,
   isBigEndian: boolean,
-): bigint => getView(input, offset).getBigUint64(0, !isBigEndian)
+): bigint => {
+  const first = readUInt32BE(input, isBigEndian ? offset : offset + 4)
+  const second = readUInt32BE(input, isBigEndian ? offset + 4 : offset)
+  return (BigInt(first) << 32n) | BigInt(second)
+}
 
 // Abstract reading multi-byte unsigned integers
 const methods = {
